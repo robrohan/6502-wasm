@@ -40,15 +40,20 @@ wasm:
 	cp public/index.html build/index.html
 
 asm:
+	mkdir -p build
+#	asm to object file
 	$(6502ASM) --cpu 6502 \
 		-o build/basic.o \
 		-W1 \
 		tests/basic.asm
-# -t none
+#	object to binary file
 	$(6502LNK) \
 		-C tests/mon.cfg \
 		-o build/basic \
 		build/basic.o
+	rm build/basic.o
+#	binary file to c array to include (temp)
+	xxd -i build/basic > src/basic.h
 
 # Run a GPL version of a 6502 emulator (temp until I can write it out)
 6502js:

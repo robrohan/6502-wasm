@@ -1,8 +1,9 @@
 #include <stdint.h>
 #include "fake6502.h"
 #include "wasm.h"
+#include "basic.h"
 
-EXPORT uint8_t ram[65535];
+// EXPORT uint8_t ram[65535];
 
 EXPORT
 uint8_t read6502(uint16_t address) 

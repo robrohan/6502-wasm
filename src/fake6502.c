@@ -259,7 +259,7 @@ static void absx() { //absolute,X
     startpage = ea & 0xFF00;
     ea += (uint16_t)x;
 
-    if (startpage != (ea & 0xFF00)) { //one cycle penlty for page-crossing on some opcodes
+    if (startpage != (ea & 0xFF00)) { //one cycle penalty for page-crossing on some opcodes
         penaltyaddr = 1;
     }
 
@@ -272,7 +272,7 @@ static void absy() { //absolute,Y
     startpage = ea & 0xFF00;
     ea += (uint16_t)y;
 
-    if (startpage != (ea & 0xFF00)) { //one cycle penlty for page-crossing on some opcodes
+    if (startpage != (ea & 0xFF00)) { //one cycle penalty for page-crossing on some opcodes
         penaltyaddr = 1;
     }
 
