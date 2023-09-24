@@ -3,14 +3,17 @@
 ; IRQ   = 0xFFFE 0XFFFF
 ; SP    = 0xFD
 
-    .org  $8000
+;    .org  $8000
 
-LDX #$01
-LDY #$02
+LDX #$06
+LDY #$07
 
+LDA #$06
+CLC
+ADC #$07
+
+LDX #$00
 start:
-    STA $200,X          ; offset
-    ; STA $300,X          ; offset
-    ; STA $400,X          ; offset
+    STA $4000,X          ; offset
     INX
     JMP start

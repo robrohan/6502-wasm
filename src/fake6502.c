@@ -169,9 +169,10 @@
 
 
 //6502 CPU registers
+EXPORT 
 uint16_t pc;
+EXPORT 
 uint8_t sp, a, x, y, status;
-
 
 //helper variables
 uint32_t instructions = 0; //keep track of total instructions executed

@@ -47,13 +47,14 @@ asm:
 		-W1 \
 		tests/basic.asm
 #	object to binary file
+#	-t none
 	$(6502LNK) \
-		-C tests/mon.cfg \
-		-o build/basic \
+		-C src/mon.cfg \
+		-o build/rom.bin \
 		build/basic.o
 	rm build/basic.o
 #	binary file to c array to include (temp)
-	xxd -i build/basic > src/basic.h
+	xxd -i build/rom.bin > src/rom.h
 
 # Run a GPL version of a 6502 emulator (temp until I can write it out)
 6502js:
