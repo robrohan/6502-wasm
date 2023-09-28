@@ -54,7 +54,7 @@ asm:
 		build/basic.o
 	rm build/basic.o
 #	binary file to c array to include (temp)
-	xxd -i build/rom.bin > src/rom.h
+#	xxd -i build/rom.bin > src/rom.h
 
 # Run a GPL version of a 6502 emulator (temp until I can write it out)
 6502js:

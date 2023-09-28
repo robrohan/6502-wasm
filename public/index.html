@@ -17,21 +17,22 @@
       } */
       canvas {
         /* aspect-ratio: 16/9; */
-        width: 65%;
+        /* width: 65%; */
         border: 1px solid green;
       }
     </style>
 
     <script type="module">
-      // const SIZE_OF_INT = 4;
-      // const width = 135;
-      // const height = 67;
-      
-      // const canvas = document.getElementById("screenCanvas");
-      // canvas.width = width;
-      // canvas.height = height;
-      // const ctx = canvas.getContext("2d");
-      // ctx.imageSmoothingEnabled = false;
+      const SIZE_OF_INT = 4;
+      // const width = 448;
+      // const height = 600;
+      const width = 240 >> 1;
+      const height = 320 >> 1;
+      const canvas = document.getElementById("screenCanvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = false;
 
       async function bootstrap() {
         const { instance } = await WebAssembly.instantiateStreaming(
@@ -54,7 +55,6 @@
           step6502,
           irq6502,
           nmi6502,
-          hookexternal,
           pc,
           sp, 
           a, 
@@ -63,49 +63,49 @@
           status,
         } = instance.exports;
 
-        // have C call malloc to reserve some memory for our screen buffer
-        // the data will be stored in the BUFFER variable pointed to in C
-        // init(width, height);
+        ////////////////////////////////////////////////////////////
+        // Load rom via http
+        const response = await fetch("rom.bin");
+        const rom_bin = await response.arrayBuffer();
+        const rom_view = new DataView(rom_bin, 0, 0x8000);
+        // copy rom data into emulator rom area
+        const chip_rom = new DataView(memory.buffer, rom.value, 0x8000);
+        chip_rom.setUint8(0, 0xff);
+        for (let i = 0; i < 0x8000; i++) {
+          chip_rom.setUint8(i, rom_view.getUint8(i));
+        }
+
+        // Reset the chip (jump to the new rom)
+        reset6502();
 
         // This is the memory location of where the BUFFER variable starts
         // in the shared memory
-        const offset = ram.value;
-        const MEM_START=0x4000;
-        const MEM_SIZE=0x4000;
-
-        // Make a javascript array the memory we are using in the BUFFER
-        // variable.
-        // const screen = new Uint8ClampedArray(
-        //   memory.buffer,      // using the C memory...
-        //   offset,             // at the offset of the ram variable...
-        //   SIZE_OF_INT * height * width // grab enough bytes for all ram
-        // );
-
-        function hookcallback() {
-          console.log("running");
-        }
-        hookexternal(hookcallback);
-        reset6502();
-
+        const MEM_START=0x2000; // Just used in mem dump display 
+        const MEM_SIZE=0x2000;
         const mem6502 = new Uint8ClampedArray(
           memory.buffer,      // using the C memory...
-          offset,             // at the offset of the ram variable...
+          io.value,          // at the offset of the ram variable...
           MEM_SIZE            // grab enough bytes for all ram
         );
+
+        /////////////////////////////////////////////
+        const screen = new Uint8ClampedArray(
+          memory.buffer,        // using the C memory...
+          io.value,             // at the offset of the ram variable...
+          SIZE_OF_INT * height * width // grab enough bytes for all ram
+        );
+        // Create an image from our screen data
+        const image = new ImageData(screen, height);
+        // and render it using the canvas tag
+        ctx.putImageData(image, 0, 0);
+
+        ///////////////////////////////////////////
+        // Registers for the processor
         const i_pc = new DataView(memory.buffer, pc.value, 2);
         const i_sp = new DataView(memory.buffer, sp.value, 2);
         const i_a = new DataView(memory.buffer, a.value, 1);
         const i_x = new DataView(memory.buffer, x.value, 1);
         const i_y = new DataView(memory.buffer, y.value, 1);
-
-        // Create an image from our screen data
-        // const image = new ImageData(screen, height);
-
-        // and render it using the canvas tag
-        // ctx.putImageData(image, 0, 0);
-
-        // exec6502(0x8100);
-
         const txt = document.querySelector("#ram");
         const pc_dom = document.querySelector("#pc");
         const sp_dom = document.querySelector("#sp");
@@ -113,43 +113,58 @@
         const y_dom = document.querySelector("#y");
         const a_dom = document.querySelector("#a");
         ///////////////////////////////////////////
-        let start = Date.now();
-        const loop = (t) => {
-          const current = Date.now();
-          const delta = current - start;
 
-          // const image = new ImageData(screen, height);
-          // ctx.putImageData(image, 0, 0);
-          
-          //for(let i = 0; i < 1000; i++) {
-            step6502();
-          //}
+        {
+          let start = Date.now();
+          const loop = (t) => {
+            const current = Date.now();
+            const delta = current - start;
 
-          txt.value = Array.from(mem6502).map((v,i) => 
-            ((i != 0 && (i % 16) == 0) ? '\n' : '')
-            + ((i % 16 == 0) ? (i + MEM_START).toString(16).padStart(4, '0') + ":\t" : '')
-            + v.toString(16).padStart(2, '0') 
-          ).join(' ');
+            /////////////////////////////////////////////////
+            // Step processor
+            // 1 MHz to 3 MHz
+            // 60fps   == 60Hz
+            // *1000   == .06MHz (60KHz)
+            // *10000  == .6MHz (600KHz)
+            // +400000 == 1MHz (low end)
+            // *3      == 3MHz (high end)
+            for(let i = 0; i < 410000; i++) {
+              step6502();
+            }
 
+            /////////////////////////////////////////////////
+            // Render IO area to the screen
+            const image = new ImageData(screen, height);
+            ctx.putImageData(image, 0, 0);
+            
+            /////////////////////////////////////////////////
+            // Display memory area
+            txt.value = Array.from(mem6502).map((v,i) => 
+              ((i != 0 && (i % 16) == 0) ? '\n' : '')
+              + ((i % 16 == 0) ? (i + MEM_START).toString(16).padStart(4, '0') + ":\t" : '')
+              + v.toString(16).padStart(2, '0') 
+            ).join(' ');
 
-          pc_dom.innerHTML = `$${i_pc.getUint8(1).toString(16).padStart(2, '0')}${i_pc.getUint8(0).toString(16).padStart(2, '0')}`;
-          sp_dom.innerHTML = `$${i_sp.getUint8(1).toString(16).padStart(2, '0')}${i_sp.getUint8(0).toString(16).padStart(2, '0')}`;
-          a_dom.innerHTML = `$${i_a.getUint8(0).toString(16).padStart(2, '0')}`;
-          x_dom.innerHTML = `$${i_x.getUint8(0).toString(16).padStart(2, '0')}`;
-          y_dom.innerHTML = `$${i_y.getUint8(0).toString(16).padStart(2, '0')}`;
+            pc_dom.innerHTML = `$${i_pc.getUint8(1).toString(16).padStart(2, '0')}${i_pc.getUint8(0).toString(16).padStart(2, '0')}`;
+            sp_dom.innerHTML = `$${i_sp.getUint8(1).toString(16).padStart(2, '0')}${i_sp.getUint8(0).toString(16).padStart(2, '0')}`;
+            a_dom.innerHTML = `$${i_a.getUint8(0).toString(16).padStart(2, '0')}`;
+            x_dom.innerHTML = `$${i_x.getUint8(0).toString(16).padStart(2, '0')}`;
+            y_dom.innerHTML = `$${i_y.getUint8(0).toString(16).padStart(2, '0')}`;
+            /////////////////////////////////////////////////
 
+            requestAnimationFrame(loop);
+          };
           requestAnimationFrame(loop);
-        };
-        requestAnimationFrame(loop);
+        }
       }
 
       bootstrap();
     </script>
   </head>
   <body>
-    <!-- <div class="wrapper">
+    <div class="wrapper">
       <canvas id="screenCanvas"></canvas>
-    </div> -->
+    </div>
 
     <div>pc=<span id="pc"></span></div>
     <div>a=<span id="a"></span></div>
