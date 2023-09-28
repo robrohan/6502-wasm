@@ -6,7 +6,7 @@
 EXPORT uint8_t zp[0x0100];
 EXPORT uint8_t stack[0x0100];
 EXPORT uint8_t ram[0x2000];
-EXPORT uint8_t io[0x2000];
+EXPORT uint8_t io[0x6000];
 ////////////////////////////
 EXPORT uint8_t rom[0x8000];
 ////////////////////////////

@@ -17,17 +17,16 @@
       } */
       canvas {
         /* aspect-ratio: 16/9; */
-        /* width: 65%; */
+        /* width: 25%;  */
         border: 1px solid green;
       }
     </style>
 
     <script type="module">
-      const SIZE_OF_INT = 4;
-      // const width = 448;
-      // const height = 600;
-      const width = 240 >> 1;
-      const height = 320 >> 1;
+      const SIZE_OF_INT = 2;
+      // https://en.wikipedia.org/wiki/Graphics_display_resolution
+      const width = 160;
+      const height = 120;
       const canvas = document.getElementById("screenCanvas");
       canvas.width = width;
       canvas.height = height;
@@ -81,7 +80,7 @@
         // This is the memory location of where the BUFFER variable starts
         // in the shared memory
         const MEM_START=0x2000; // Just used in mem dump display 
-        const MEM_SIZE=0x2000;
+        const MEM_SIZE=0x6000;
         const mem6502 = new Uint8ClampedArray(
           memory.buffer,      // using the C memory...
           io.value,          // at the offset of the ram variable...
