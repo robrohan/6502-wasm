@@ -17,17 +17,37 @@
       } */
       canvas {
         /* aspect-ratio: 16/9; */
-        width: 25%;
+        /* width: 50%; */
         border: 1px solid green;
       }
       .registers { font-family: 'Courier New', Courier, monospace; }
     </style>
 
     <script type="module">
-      // const SIZE_OF_INT = 2;
+      const COLORS = {
+        "0": [0x00,0x00,0x00],
+        "1": [0xff,0xff,0xff],
+        "2": [0xff,0x00,0x00],
+        "3": [0x00,0xff,0xff],
+        "4": [0x80,0x00,0x80],
+        "5": [0x00,0xff,0x00],
+        "6": [0x00,0x00,0xff],
+        "7": [0xff,0xff,0x00],
+        "8": [0xff,0xA5,0x0],
+        "9": [0xa5,0x2a,0x2a],
+        //#-------------------------
+        "10": [0xff,0x00,0x00],
+        "11": [0x80,0x80,0x80],
+        "12": [0x80,0x80,0x80],
+        "13": [0x00,0x80,0x00],
+        "14": [0x66,0xb2,0xff],
+        "15": [0xe0,0xe0,0xe0],
+      };
+
+
       // https://en.wikipedia.org/wiki/Graphics_display_resolution
-      const width = 160;
-      const height = 120;
+      const width = 256;
+      const height = 190; // 240;
       const canvas = document.getElementById("screenCanvas");
       canvas.width = width;
       canvas.height = height;
@@ -99,9 +119,6 @@
         );
         const screen_view = new DataView(memory.buffer, io.value, 0x6000);
 
-        const display = new Uint8ClampedArray(height * width * 3);
-        const display_view = new DataView(display.buffer, 0, height * width * 3);
-
         ///////////////////////////////////////////
         // Registers for the processor
         const i_pc = new DataView(memory.buffer, pc.value, 2);
@@ -120,7 +137,10 @@
         ///////////////////////////////////////////
 
         {
+          const display = new Uint8ClampedArray(height * width * 4);
+          const display_view = new DataView(display.buffer, 0, height * width * 4);
           let start = Date.now();
+
           const loop = (t) => {
             const current = Date.now();
             const delta = current - start;
@@ -139,15 +159,31 @@
 
             /////////////////////////////////////////////////
             // Render IO area to the screen
+            // console.log(height*width, 0x6000);
+            // console.log(screen_view, display_view);
             let stride = 0;
             for (let i = 0; i < 0x6000; i++) {
               const c = screen_view.getUint8(i);
-              display_view.setUint8(stride+0, c);
-              display_view.setUint8(stride+1, c >> 1);
-              display_view.setUint8(stride+2, c >> 2);
-              stride = i+3;
+              
+              const low = c & 0x0f;
+              const high = (c >> 4) & 0x0f;
+
+              let rgb = COLORS[low];
+              display_view.setUint8(stride+0, rgb[0]);
+              display_view.setUint8(stride+1, rgb[1]);
+              display_view.setUint8(stride+2, rgb[2]);
+              display_view.setUint8(stride+3, 0xff);
+
+              rgb = COLORS[high];
+              display_view.setUint8(stride+4, rgb[0]);
+              display_view.setUint8(stride+5, rgb[1]);
+              display_view.setUint8(stride+6, rgb[2]);
+              display_view.setUint8(stride+7, 0xff);
+              stride = i*8;
+
+              if (stride >= width*height*4) break;
             }
-            const image = new ImageData(display, width);
+            const image = new ImageData(display, width, height);
             ctx.putImageData(image, 0, 0);
             
             /////////////////////////////////////////////////

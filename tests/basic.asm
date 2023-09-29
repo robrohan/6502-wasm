@@ -8,7 +8,7 @@ LDA #$06
 CLC
 ADC #$07
 
-LDA #$00
+LDA #$01
 LDX #$00
 
 start:
@@ -28,6 +28,7 @@ start:
     STA $2D00, X
     STA $2E00, X
     STA $2F00, X
+    ; INX
     STA $3000, X          ; offset
     STA $3100, X
     STA $3200, X
@@ -44,6 +45,7 @@ start:
     STA $3D00, X
     STA $3E00, X
     STA $3F00, X
+    ; INX
     STA $4000, X          ; offset
     STA $4100, X
     STA $4200, X
@@ -60,6 +62,7 @@ start:
     STA $4D00, X
     STA $4E00, X
     STA $4F00, X
+    ; INX
     STA $5000, X          ; offset
     STA $5100, X
     STA $5200, X
@@ -76,6 +79,7 @@ start:
     STA $5D00, X
     STA $5E00, X
     STA $5F00, X
+    ; INX
     STA $6000, X          ; offset
     STA $6100, X
     STA $6200, X
@@ -92,6 +96,7 @@ start:
     STA $6D00, X
     STA $6E00, X
     STA $6F00, X
+    ; INX
     STA $7000, X          ; offset
     STA $7100, X
     STA $7200, X
@@ -109,5 +114,5 @@ start:
     STA $7E00, X
     STA $7F00, X
     INX
-    ADC #$01
+    ADC #$01               ; cycle accumulator
     JMP start
