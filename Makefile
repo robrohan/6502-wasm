@@ -6,6 +6,9 @@ CC=clang
 6502ASM=ca65
 6502LNK=ld65
 
+# pixels
+ASM=basic
+
 help:
 	@echo "Hi"
 
@@ -28,6 +31,7 @@ wasm:
 		--target=wasm32 \
 		-std=c99 \
 		-Wall \
+		-Wextra \
 		-g \
 		-O3 -flto \
 		-nostdlib \
@@ -43,19 +47,15 @@ asm:
 	mkdir -p build
 #	asm to object file
 	$(6502ASM) --cpu 6502 \
-		-o build/basic.o \
+		-o build/$(ASM).o \
 		-W1 \
-		tests/basic.asm
+		tests/$(ASM).asm
 #	object to binary file
 #	-t none
 	$(6502LNK) \
 		-C src/mon.cfg \
 		-o build/rom.bin \
-		build/basic.o
-	rm build/basic.o
+		build/$(ASM).o
+	rm build/$(ASM).o
 #	binary file to c array to include (temp)
 #	xxd -i build/rom.bin > src/rom.h
-
-# Run a GPL version of a 6502 emulator (temp until I can write it out)
-6502js:
-	busboy --root=6502js-master

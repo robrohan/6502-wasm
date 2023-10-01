@@ -9,18 +9,15 @@
       body {
         background-color: silver;
       }
-      /* .wrapper {
-        display: flex;
-        align-items: center;
-        height: 100vh;
-        justify-content: center;
-      } */
-      canvas {
-        /* aspect-ratio: 16/9; */
-        /* width: 50%; */
-        border: 1px solid green;
+      .content {
+        margin: 3rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 10rem 1fr;
       }
-      .registers { font-family: 'Courier New', Courier, monospace; }
+      .registers { 
+        font-family: 'Courier New', Courier, monospace; 
+      }
     </style>
 
     <script type="module">
@@ -35,7 +32,7 @@
         "7": [0xff,0xff,0x00],
         "8": [0xff,0xA5,0x0],
         "9": [0xa5,0x2a,0x2a],
-        //#-------------------------
+        //-------------------------
         "10": [0xff,0x00,0x00],
         "11": [0x80,0x80,0x80],
         "12": [0x80,0x80,0x80],
@@ -44,10 +41,9 @@
         "15": [0xe0,0xe0,0xe0],
       };
 
-
       // https://en.wikipedia.org/wiki/Graphics_display_resolution
       const width = 256;
-      const height = 144; // 190; // 144 would make it 16:9
+      const height = 144; // 190; // 144 makes it 16:9
       const canvas = document.getElementById("screenCanvas");
       canvas.width = width;
       canvas.height = height;
@@ -153,7 +149,8 @@
             // *10000  == .6MHz (600KHz)
             // +400000 == 1MHz (low end)
             // *3      == 3MHz (high end)
-            for(let i = 0; i < 410000; i++) {
+            // for(let i = 0; i < 410000; i++) {
+            for(let i = 0; i < 1000; i++) {
               step6502();
             }
 
@@ -165,8 +162,8 @@
             for (let i = 0; i < 0x6000; i++) {
               const c = screen_view.getUint8(i);
               
-              const low = c & 0x0f;
-              const high = (c >> 4) & 0x0f;
+              const high = c & 0x0f;
+              const low = (c >> 4) & 0x0f;
 
               let rgb = COLORS[low];
               display_view.setUint8(stride+0, rgb[0]);
@@ -207,24 +204,28 @@
           requestAnimationFrame(loop);
         }
       }
-
       bootstrap();
     </script>
   </head>
   <body>
-    <div class="wrapper">
-      <canvas id="screenCanvas"></canvas>
-    </div>
+    <div class="content">
+      <div class="wrapper">
+        <canvas id="screenCanvas"></canvas>
+      </div>
 
-    <div class="registers">
-      <div>pc=<span id="pc"></span></div>
-      <div>&nbsp;a=<span id="a"></span></div>
-      <div>&nbsp;x=<span id="x"></span></div>
-      <div>&nbsp;y=<span id="y"></span></div>
-      <div>sp=<span id="sp"></span></div>
-      <div>&nbsp;&nbsp;&nbsp;<span title="negative, overflow, break, decimal, interrupt, zero, carry">NV-BDIZC</span></div>
-      <div>fg=<span id="fg"></span></div>
+      <div class="registers">
+        <div>pc=<span id="pc"></span></div>
+        <div>&nbsp;a=<span id="a"></span></div>
+        <div>&nbsp;x=<span id="x"></span></div>
+        <div>&nbsp;y=<span id="y"></span></div>
+        <div>sp=<span id="sp"></span></div>
+        <div>&nbsp;&nbsp;&nbsp;<span title="negative, overflow, break, decimal, interrupt, zero, carry">NV-BDIZC</span></div>
+        <div>fg=<span id="fg"></span></div>
+      </div>
+
+      <div class="ram">
+        <textarea id="ram" cols="60" rows="40"></textarea>
+      </div>
     </div>
-    <textarea id="ram" cols="80" rows="40"></textarea>
   </body>
 </html>

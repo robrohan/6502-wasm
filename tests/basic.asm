@@ -14,8 +14,7 @@
 ; column format.
 ;   y   $2000
 ; x +------------------
-;   |    X1
-;   |    X2
+;   |    X1X2
 ;   |      
 ;   |     |
 ;   |    \ /
@@ -51,9 +50,6 @@ start:
     STA $2D00, X
     STA $2E00, X
     STA $2F00, X
-
-    ADC #$01
-
     STA $3000, X          ; offset
     STA $3100, X
     STA $3200, X
@@ -70,9 +66,6 @@ start:
     STA $3D00, X
     STA $3E00, X
     STA $3F00, X
-
-    ADC #$01
-
     STA $4000, X          ; offset
     STA $4100, X
     STA $4200, X
@@ -89,9 +82,6 @@ start:
     STA $4D00, X
     STA $4E00, X
     STA $4F00, X
-
-    ADC #$01
-
     STA $5000, X          ; offset
     STA $5100, X
     STA $5200, X
@@ -108,9 +98,6 @@ start:
     STA $5D00, X
     STA $5E00, X
     STA $5F00, X
-
-    ADC #$01
-
     STA $6000, X          ; offset
     STA $6100, X
     STA $6200, X
