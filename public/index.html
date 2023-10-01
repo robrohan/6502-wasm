@@ -12,8 +12,10 @@
       .content {
         margin: 3rem;
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 20rem 1fr;
         grid-template-rows: 10rem 1fr;
+        justify-content: center;
+        align-items: center;
       }
       .registers { 
         font-family: 'Courier New', Courier, monospace; 
@@ -149,8 +151,8 @@
             // *10000  == .6MHz (600KHz)
             // +400000 == 1MHz (low end)
             // *3      == 3MHz (high end)
-            // for(let i = 0; i < 410000; i++) {
-            for(let i = 0; i < 1000; i++) {
+            for(let i = 0; i < 410000; i++) {
+            // for(let i = 0; i < 1000; i++) {
               step6502();
             }
 
