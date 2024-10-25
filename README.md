@@ -2,7 +2,7 @@
 
 ![Screenshot](./docs/shot.png)
 
-6502 powered eReader for developing markets
+Playing around with 6502 assembly in wasm with a pretend board
 
 - https://www.youtube.com/watch?v=PxZGoiWvA4A
 - http://6502.org/tutorials/6502opcodes.html
@@ -10,7 +10,13 @@
 
 ## Getting started
 
-While I am working on the dev environment, `make 6502js` will start a javascript version similar to the simulator we're building, but using only javascript.
+You need clang installed and be running Ubuntu (by default).
+
+- `make setup`
+- `make wasm`
+- `make asm`
+- `make serve_asm`
+
 
 ## Notes
 - $ is base 16
