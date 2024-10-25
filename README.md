@@ -1,5 +1,7 @@
 # BoundText Project
 
+![Screenshot](./docs/shot.png)
+
 6502 powered eReader for developing markets
 
 - https://www.youtube.com/watch?v=PxZGoiWvA4A

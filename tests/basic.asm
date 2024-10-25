@@ -1,6 +1,6 @@
 ;======================================
 ; Cycle through a bunch of colours on
-; my made up display (which is 256x190
+; my made up display (which is 256x190)
 ; when breaking the bytes into halfs 
 ; and using each half as a colour look
 ; up. Not sure this would work in the
