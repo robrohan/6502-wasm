@@ -16,6 +16,7 @@ setup:
 #	https://cc65.github.io/
 	sudo apt-get update
 	sudo apt-get install cc65
+	sudo apt-get install lld
 
 clean:
 	rm -rf build
@@ -42,6 +43,9 @@ wasm:
 		-o build/6502.wasm \
 		src/board.c src/fake6502.c
 	cp public/index.html build/index.html
+
+serve_asm:
+	busboy --root=./build
 
 asm:
 	mkdir -p build
