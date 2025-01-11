@@ -18,6 +18,11 @@ setup:
 	sudo apt-get install cc65
 	sudo apt-get install lld
 
+setup_mac:
+	brew update
+	brew install cc65
+	brew install lld
+
 clean:
 	rm -rf build
 
